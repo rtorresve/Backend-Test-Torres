@@ -37,17 +37,31 @@ APPEND_SLASH = False
 
 # Application definition
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
+    "django.forms",
+]
+
+THIRD_PARTY_APPS = [
     "rest_framework",
     "django_extensions",
-    "backend_test.utils",
+    "crispy_forms",
+    "allauth",
+    "allauth.account",
 ]
+
+LOCAL_APPS = [
+    "backend_test.utils",
+    "backend_test.users",
+]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "backend_test.middleware.HealthCheckAwareSessionMiddleware",
@@ -57,6 +71,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.common.BrokenLinkEmailsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "backend_test.middleware.HeaderNoCacheMiddleware",
 ]
@@ -66,9 +81,12 @@ ROOT_URLCONF = "backend_test.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
-        "APP_DIRS": True,
+        "DIRS": [f"{BASE_DIR}/backend_test/templates"],
         "OPTIONS": {
+            "loaders": [
+                "django.template.loaders.filesystem.Loader",
+                "django.template.loaders.app_directories.Loader",
+            ],
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
@@ -88,10 +106,10 @@ WSGI_APPLICATION = "backend_test.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": getenv("POSTGRES_DEFAULT_DB", default="postgres"),
-        "USER": getenv("POSTGRES_DEFAULT_USER", default="postgres"),
-        "PASSWORD": getenv("POSTGRES_DEFAULT_PASSWORD", default="postgres"),
-        "HOST": getenv("POSTGRES_DEFAULT_HOSTNAME", default="postgres"),
+        "NAME": getenv("POSTGRE_DB", default="postgres"),
+        "USER": getenv("POSTGRES_USER", default="postgres"),
+        "PASSWORD": getenv("POSTGRES_PASSWORD", default="postgres"),
+        "HOST": getenv("POSTGRES_HOSTNAME", default="postgres"),
         "PORT": 5432,
         "CONN_MAX_AGE": 600,
         "DISABLE_SERVER_SIDE_CURSORS": True,
@@ -159,6 +177,47 @@ if getenv("BROWSABLE_API_RENDERER", default=False, coalesce=bool):
     ] + ["rest_framework.renderers.BrowsableAPIRenderer"]
 
 # APP SPECIFIC SETTINGS
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+# https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
+AUTH_USER_MODEL = "users.User"
+# https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
+LOGIN_REDIRECT_URL = "users:redirect"
+# https://docs.djangoproject.com/en/dev/ref/settings/#login-url
+LOGIN_URL = "account_login"
+
+# django-allauth
+ACCOUNT_ALLOW_REGISTRATION = getenv("DJANGO_ACCOUNT_ALLOW_REGISTRATION", default=True, coalesce=bool)
+ACCOUNT_AUTHENTICATION_METHOD = "username"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_ADAPTER = "backend_test.users.adapters.AccountAdapter"
+
+ADMIN_URL = "admin/"
+ADMINS = [("""Rafael Torres""", "rafael.torres@example.com")]
+MANAGERS = ADMINS
+
+SITE_ID = 1
+
+# static
+STATIC_URL = "/static/"
+
+STATICFILES_DIRS = [f"{BASE_DIR}/backend_test/static"]
+
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+]
+
+EMAIL_BACKEND = getenv(
+    "DJANGO_EMAIL_BACKEND",
+    default="django.core.mail.backends.console.EmailBackend",
+)
+
+EMAIL_TIMEOUT = 5
+
 
 # if getenv("SENTRY_DSN", default=None):
 #    sentry_sdk.init(dsn=getenv("SENTRY_DSN"), integrations=[DjangoIntegration()])

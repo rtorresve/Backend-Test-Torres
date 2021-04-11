@@ -14,3 +14,7 @@ htmlcov/
 *.ipynb
 .DS_Store
 _*/
+staticfiles/
+.project
+.pydevproject
+
