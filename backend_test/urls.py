@@ -16,9 +16,16 @@ Including another URLconf
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic.base import TemplateView
+
 from .utils.healthz import healthz
 
+
 urlpatterns = [
+    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
+    path(
+        "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
+    ),
     path("healthz", healthz, name="healthz"),
     path(settings.ADMIN_URL, admin.site.urls),
     path("users/", include("backend_test.users.urls", namespace="users")),
