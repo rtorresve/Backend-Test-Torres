@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+	{% if order_list %}
+	<div class="row">
+		<div class="col align-self-center">
+		    <h1>
+		    	Order List
+			</h1>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-12">
+		    <table class="table table-striped">
+		        <tr><th>Main</th><th>Side Orders</th><th></th><th></th></tr>
+		        {% for order in order_list %}
+		            <tr>
+		                <td>{{ order.main }}</td>
+		                <td>{{ order.side_order }}</td>
+		                <td><a href="{% url 'lunchs:edit_order' order.pk %}">edit</a></td>
+		                <td>
+		                    <form method="POST" action="{% url 'lunchs:delete_order' order.pk %}">
+		                        {% csrf_token %}
+		                        <input type="submit" class="btn btn-sm btn-danger" value="delete"></input>
+		                    </form>
+		                </td>
+		            </tr>
+		        {% endfor %}
+		    </table>
+		</div>
+	</div>
+	{% endif %}
+	<div class="row justify-content-end">
+	    <div class="col-4">
+	      <a href="{% url 'lunchs:create_order' %}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">
+	      Create a new order
+	      </a>
+	    </div>
+	</div>
+</div>
+{% endblock content %}
