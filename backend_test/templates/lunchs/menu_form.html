@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block inline_head %}
+<script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
+<link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+{% endblock inline_head %}
+
+{% block content %}
+<div class="container">
+  <div class="row align-items-center">
+    <div class="col align-self-center">
+		<h1>
+		{% if dish %}Edit menu
+		{% else %}Create menu
+		{% endif%}
+		</h1>
+	</div>
+  </div>
+  <div class="row justify-content-center">
+	<div class="col-10">
+		<form method="POST" action="."> 
+			{% csrf_token %}
+			{{ form }}
+			</br>
+			<input type="submit" class="btn btn-primary" value="Save">
+		</form>
+	</div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block inline_javascript %}
+<script>
+    $('#id_date').datepicker({
+        uiLibrary: 'bootstrap4'
+    });
+</script>
+{% endblock inline_javascript %}
+
