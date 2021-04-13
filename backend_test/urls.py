@@ -30,4 +30,6 @@ urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
     path("users/", include("backend_test.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
+    path("lunchs/", include("backend_test.lunchs.urls", namespace="lunchs")),
+
 ]
