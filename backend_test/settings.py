@@ -219,6 +219,7 @@ EMAIL_BACKEND = getenv(
 
 EMAIL_TIMEOUT = 5
 
+TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
 # if getenv("SENTRY_DSN", default=None):
 #    sentry_sdk.init(dsn=getenv("SENTRY_DSN"), integrations=[DjangoIntegration()])
